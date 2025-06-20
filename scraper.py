@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import requests
 from helper import extract_info
+from api import send_to_api
 import fitz  # PyMuPDF
 
 def main():
@@ -55,6 +56,7 @@ def main():
             print(info)
             result_to_send.append(info)
         print(result_to_send)
+        # send_to_api(result_to_send)
     finally:
         driver.quit()
 
