@@ -1,12 +1,11 @@
 import re
 
-def extract_info(text: str):
+def extract_info(text: str, published_at: str):
     results = []
 
-    # Split the text by publications using "Processo nnnnn..." pattern
+    # Split by each "Processo xxx" publication
     entries = re.split(r"(?:\n|^)(Processo\s+\d{7}-\d{2}\.\d{4}\.\d{1}\.\d{2}\.\d{4})", text)
 
-    # Reassemble the split results in pairs: [label, content]
     for i in range(1, len(entries), 2):
         case_number = entries[i]
         content = entries[i + 1]
@@ -14,25 +13,33 @@ def extract_info(text: str):
 
         # Extract plaintiff
         plaintiff_match = re.search(r"[-–]\s*(.*?)\s*-\s*Vistos", full_block)
-        plaintiff = plaintiff_match.group(1).strip() if plaintiff_match else None
+        plaintiff = plaintiff_match.group(1).strip() if plaintiff_match else ""
 
         # Extract attorneys
         attorneys = re.findall(r"ADV: ([A-Z\s]+)\s*\(OAB.*?\)", full_block)
-        attorney = "; ".join(attorneys) if attorneys else None
+        attorney = "; ".join(attorneys).strip() if attorneys else ""
 
-        # Extract values
-        value_principal = re.search(r"R\$ ?([\d\.,]+)\s*-\s*principal", full_block, re.IGNORECASE)
-        value_interest = re.search(r"R\$ ?([\d\.,]+)\s*-\s*juros", full_block, re.IGNORECASE)
-        value_attorney = re.search(r"R\$ ?([\d\.,]+)\s*-\s*honorários", full_block, re.IGNORECASE)
+        # Extract and format monetary values with comma
+        def extract_val(label):
+            match = re.search(rf"R\$ ?([\d\.,]+)\s*-\s*{label}", full_block, re.IGNORECASE)
+            if not match:
+                return ""
+            raw = match.group(1).replace(".", "").replace(",", ".")
+            return raw
+
+        value_principal = extract_val("principal")
+        value_interest = extract_val("juros")
+        value_attorney = extract_val("honorários")
 
         results.append({
             "case_number": case_number.replace("Processo", "").strip(),
             "plaintiff": plaintiff,
             "attorney": attorney,
-            "value_principal": value_principal.group(1) if value_principal else None,
-            "value_interest": value_interest.group(1) if value_interest else None,
-            "value_attorney": value_attorney.group(1) if value_attorney else None,
-            # "full_text": full_block,
+            "value_principal": value_principal,
+            "value_interest": value_interest,
+            "value_attorney": value_attorney,
+            "published_at": published_at,
+            "full_text": full_block.strip(),
             "defendant": "Instituto Nacional do Seguro Social - INSS",
             "status": "new"
         })

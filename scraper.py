@@ -6,12 +6,14 @@ import time
 import requests
 from helper import extract_info
 from api import send_to_api
-import fitz  # PyMuPDF
+import json
+import fitz  
 
 def main():
     driver = webdriver.Chrome()
     base_url = "https://dje.tjsp.jus.br"
     home_url = f"{base_url}/cdje/index.do"
+    published_at= "2024-11-13"  # This is the date we are interested in
     try:
         driver.get(home_url)
         wait = WebDriverWait(driver, 10)
@@ -30,7 +32,6 @@ def main():
         if not results:
             return "No results found."
         rows = driver.find_elements(By.CLASS_NAME, "fundocinza1")
-        print(f"Found {len(rows)} results.")
         extracted_data = []
         for row in rows:
             pdf_link = row.find_element(By.XPATH, ".//a[contains(@title, 'Visualizar')]")
@@ -46,16 +47,15 @@ def main():
         result_to_send = []
         for publication in extracted_data:
             pdf_link = publication['pdf_link']
-            print(f"Downloading {pdf_link}")
             response = requests.get(pdf_link)
             doc = fitz.open(stream=response.content, filetype="pdf")
             full_text = ""
             for page in doc:
                 full_text += page.get_text()
-            info = extract_info(full_text)
-            print(info)
+            info = extract_info(full_text, published_at)
             result_to_send.append(info)
-        print(result_to_send)
+        with open("result.json", "w", encoding="utf-8") as f:
+            json.dump(result_to_send, f, ensure_ascii=False, indent=2)
         # send_to_api(result_to_send)
     finally:
         driver.quit()
