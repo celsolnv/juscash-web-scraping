@@ -62,6 +62,7 @@ def main():
             result_to_send.append(info)
         # with open("result.json", "w", encoding="utf-8") as f:
         #     json.dump(result_to_send, f, ensure_ascii=False, indent=2)
+        # TODO: check pagination
         send_to_api(result_to_send)
     finally:
         driver.quit()

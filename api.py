@@ -1,6 +1,6 @@
 import requests
 
-def send_to_api(publications, api_url = "http://localhost:8080/api/publications/batch", token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTA3MDAyMDksImV4cCI6MTc1MDc4NjYwOSwic3ViIjoiMiJ9.bW-bhVX3xud8oLjyzp8oQwjxDXM78In1PdkshqgIAIs"):
+def send_to_api(publications, api_url = "https://juscash-test.site/api/publications/batch", token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTA3Mjg3ODcsImV4cCI6MTc1MDgxNTE4Nywic3ViIjoiMSJ9.7PzrqppnnLjp1PiEaunA2PzHSQSog5Pq9Y0osuqhu-s"):
     headers = {
         "Content-Type": "application/json"
     }
