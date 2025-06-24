@@ -50,4 +50,8 @@ def extract_info(text: str, published_at: str):
         return sum(1 for f in fields if entry.get(f))
 
     most_complete = max(results, key=count_filled_fields, default=None)
+
+    if most_complete:
+        most_complete = {k: v for k, v in most_complete.items() if v}
+
     return most_complete

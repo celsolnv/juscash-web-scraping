@@ -1,6 +1,6 @@
 import requests
 
-def send_to_api(publications, api_url, token=None):
+def send_to_api(publications, api_url = "http://localhost:8080/api/publications/batch", token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTA3MDAyMDksImV4cCI6MTc1MDc4NjYwOSwic3ViIjoiMiJ9.bW-bhVX3xud8oLjyzp8oQwjxDXM78In1PdkshqgIAIs"):
     headers = {
         "Content-Type": "application/json"
     }
@@ -11,8 +11,8 @@ def send_to_api(publications, api_url, token=None):
     try:
         response = requests.post(api_url, json=publications, headers=headers)
         response.raise_for_status()
-        print("✅ All data sent successfully.")
+        print("✅ Todos os dados enviados com sucesso!")
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"❌ Failed to send data: {e}")
+        print(f"❌ Falha ao enviar os dados {e}")
         return None
